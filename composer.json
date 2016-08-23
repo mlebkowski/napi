@@ -1,0 +1,13 @@
+{
+  "autoload": {
+    "psr-4": {
+      "Nassau\\Napi\\": "src/"
+    }
+  },
+  "bin": ["bin/napi"],
+  "require": {
+    "symfony/console": "^3.1",
+    "symfony/process": "^3.1",
+    "guzzlehttp/guzzle": "^6.2"
+  }
+}

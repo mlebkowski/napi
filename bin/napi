@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+use Nassau\Napi\NapiCommand;
+use Symfony\Component\Console\Input\ArgvInput;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+$console = new \Symfony\Component\Console\Application('napi', '@package_version@');
+
+$console->add(new NapiCommand(new \Nassau\Napi\NapiService(
+    new \Nassau\Napi\Subtitles\EncondigAwareFetcher(new \Nassau\Napi\Subtitles\NapiFetcher(new \GuzzleHttp\Client())),
+    new \Nassau\Napi\Formatter\TxtToSrtFormatter(),
+    new \Nassau\Napi\Fps\FFmpegFpsReader(new \Symfony\Component\Process\ProcessBuilder())
+)));
+
+$console->run(new ArgvInput(['', 'command' => NapiCommand::NAME] + $_SERVER['argv']));
