@@ -49,7 +49,7 @@ class TxtToSrtFormatter implements Formatter
     private function formatText($text, $color)
     {
         $emphasize = function ($s) {
-            return '/' === $s{0} ? sprintf('<i>%s</i>', substr($s, 1)) : $s;
+            return 0 === strpos($s, '/') ? sprintf('<i>%s</i>', substr($s, 1)) : $s;
         };
 
         $text = implode("\n", array_map($emphasize, explode('|', trim($text))));
