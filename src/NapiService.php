@@ -49,7 +49,7 @@ class NapiService
 
         $subtitles = $this->formatter->reformat($subtitles, $fps);
 
-        $target = preg_replace('/\.[^.]+$/', sprintf('.%s.srt', strtolower($language)), $file->getFilename());
+        $target = preg_replace('/\.[^.]+$/', sprintf('.%s.srt', strtolower($language)), $file->getRealPath());
 
         file_put_contents($target, $subtitles);
 
