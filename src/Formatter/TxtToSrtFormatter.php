@@ -6,42 +6,38 @@ class TxtToSrtFormatter implements Formatter
 {
     const RE = '/^[{\[](?<from>\d+)[}\]][{\[](?<to>\d+)[}\]](?:[{\[]C:\$(?<color>[0-9a-f]{6})[}\]])?(?<text>.+)$/m';
 
-    /**
-     * @param string $source
-     * @param float $fps
-     * @return string
-     */
-    public function reformat($source, $fps)
+    public function reformat($source, FormatterOptions $options)
     {
         if (!$source || '1' === substr($source, 0, 1)) {
             return $source;
         }
 
         if ($source{0} === '[') {
-            $fps = 10;
+            $options = $options->withFps(10);
         }
 
         preg_match_all(self::RE, $source, $source, PREG_SET_ORDER);
 
-        return implode("\n", array_map(function ($num, $data) use ($fps) {
-            return $this->formatItem($data + ['num' => $num], $fps);
+        return implode("\n", array_map(function ($num, $data) use ($options) {
+            return $this->formatItem($data + ['num' => $num], $options);
         }, range(1, sizeof($source)), $source));
     }
 
 
-    private function formatItem($data, $fps)
+    private function formatItem($data, FormatterOptions $options)
     {
         return vsprintf("%d\n%s --> %s\n%s\n", [
             $data['num'],
-            $this->formatDate($data['from'], $fps),
-            $this->formatDate($data['to'], $fps),
+            $this->formatDate($data['from'], $options),
+            $this->formatDate($data['to'], $options),
             $this->formatText($data['text'], $data['color']),
         ]);
     }
 
-    private function formatDate($value, $fps)
+    private function formatDate($value, FormatterOptions $options)
     {
-        $value /= $fps;
+        $value /= $options->getFps();
+        $value += $options->getDelay();
 
         return sprintf('%s,%03d', gmdate('H:i:s', $value), ($value - ($value >> 0)) * 1000);
     }

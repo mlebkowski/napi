@@ -2,6 +2,7 @@
 
 namespace Nassau\Napi;
 
+use Nassau\Napi\Formatter\FormatterOptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,6 +16,7 @@ class NapiCommand extends Command
     const ARGUMENT_FILE = 'file';
     const OPTION_LANGUAGE = 'language';
     const OPTION_FPS = 'fps';
+    const OPTION_DELAY = 'delay';
 
     /**
      * @var NapiService
@@ -41,6 +43,7 @@ class NapiCommand extends Command
 
         $this->addOption(self::OPTION_LANGUAGE, substr(self::OPTION_LANGUAGE, 0, 1), InputOption::VALUE_REQUIRED, "", "pl");
         $this->addOption(self::OPTION_FPS, null, InputOption::VALUE_REQUIRED, "", 23.976);
+        $this->addOption(self::OPTION_DELAY, null, InputOption::VALUE_REQUIRED, "", 0);
 
         $this->addArgument(self::ARGUMENT_FILE, InputArgument::IS_ARRAY | InputArgument::REQUIRED);
     }
@@ -49,7 +52,12 @@ class NapiCommand extends Command
     {
         $files = $input->getArgument(self::ARGUMENT_FILE);
         $language = $input->getOption(self::OPTION_LANGUAGE);
-        $defaultFps = floatval($input->getOption(self::OPTION_FPS));
+
+        $options = new FormatterOptions(
+            floatval($input->getOption(self::OPTION_FPS)),
+            floatval($input->getOption(self::OPTION_DELAY))
+        );
+
 
         foreach ($files as $file) {
             $file = new \SplFileInfo($file);
@@ -62,7 +70,7 @@ class NapiCommand extends Command
                 continue;
             }
 
-            $result = $this->napiService->getSubtitles($file, $language, $defaultFps);
+            $result = $this->napiService->getSubtitles($file, $language, $options);
 
             if ($result) {
                 $output->writeln('<question>Success</question>');

@@ -3,6 +3,7 @@
 namespace Nassau\Napi;
 
 use Nassau\Napi\Formatter\Formatter;
+use Nassau\Napi\Formatter\FormatterOptions;
 use Nassau\Napi\Fps\FpsReader;
 use Nassau\Napi\Subtitles\Fetcher;
 
@@ -37,7 +38,7 @@ class NapiService
     }
 
 
-    public function getSubtitles(\SplFileInfo $file, $language, $defaultFps)
+    public function getSubtitles(\SplFileInfo $file, $language, FormatterOptions $options)
     {
         $subtitles = $this->fetcher->getSubtitles($file, $language);
 
@@ -45,9 +46,9 @@ class NapiService
             return false;
         }
 
-        $fps = $this->fpsReader->getFps($file) ?: $defaultFps;
+        $options = $options->withFps($this->fpsReader->getFps($file) ?: $options->getFps());
 
-        $subtitles = $this->formatter->reformat($subtitles, $fps);
+        $subtitles = $this->formatter->reformat($subtitles, $options);
 
         $target = preg_replace('/\.[^.]+$/', sprintf('.%s.srt', strtolower($language)), $file->getRealPath());
 

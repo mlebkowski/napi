@@ -6,8 +6,8 @@ interface Formatter
 {
     /**
      * @param string $source
-     * @param float $fps
+     * @param FormatterOptions $options
      * @return string
      */
-    public function reformat($source, $fps);
+    public function reformat($source, FormatterOptions $options);
 }
